@@ -8,6 +8,9 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 @Entity(name = "User_details")
 public class User {
+    public User() {
+    }
+
     @Id
     @GeneratedValue
     private Integer id;
