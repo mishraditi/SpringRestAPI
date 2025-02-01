@@ -1,5 +1,6 @@
 package com.myproject.api.spring_rest_api.jpa;
 
+import com.myproject.api.spring_rest_api.user.Post;
 import com.myproject.api.spring_rest_api.user.User;
 import com.myproject.api.spring_rest_api.user.UserDaoService;
 import com.myproject.api.spring_rest_api.user.UserNotFoundException;
@@ -62,5 +63,14 @@ public class UserJpaResource {
     public void deleteUser(@PathVariable int id){
         repository.deleteById(id);
      }
+    @GetMapping("/jpa/users/{id}/posts")
+    public List<Post> RetrievePostForUser(@PathVariable int id){
+
+        Optional<User> user = repository.findById(id);
+
+        if(user.isEmpty())
+            throw new UserNotFoundException("id:"+id);
+            return user.get().getPosts();
+    }
 
 }
