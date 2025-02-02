@@ -2,17 +2,26 @@ package com.myproject.api.spring_rest_api.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Post {
     @Id
     @GeneratedValue
     private Integer id;
+    @Size(min = 10)
     private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private User user;
 
+    public User getUser() {
+        return user;
+    }
+    public void setUser(User user) {
+        this.user = user;
+    }
     public Integer getId() {
         return id;
     }
