@@ -20,11 +20,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class UserJpaResource {
-    private UserDaoService service;
    private UserRepository repository;
-    public UserJpaResource(UserDaoService service , UserRepository repository) {
-        this.service = service;
+   private PostRepository postRepository;
+    public UserJpaResource( UserRepository repository , PostRepository postRepository) {
         this.repository = repository;
+        this.postRepository = postRepository; 
     }
 
     // GET /users
@@ -58,11 +58,13 @@ public class UserJpaResource {
                 .buildAndExpand(savedUser.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).build();    }
+        return ResponseEntity.created(location).build();
+    }
      @DeleteMapping("/jpa/users/{id}")
     public void deleteUser(@PathVariable int id){
         repository.deleteById(id);
      }
+
     @GetMapping("/jpa/users/{id}/posts")
     public List<Post> RetrievePostForUser(@PathVariable int id){
 
@@ -73,4 +75,23 @@ public class UserJpaResource {
             return user.get().getPosts();
     }
 
+    @PostMapping("/jpa/users/{id}/posts")
+    public ResponseEntity<Object> createPostForUser(@PathVariable int id, @Valid @RequestBody Post post) {
+        Optional<User> user = repository.findById(id);
+
+        if(user.isEmpty())
+            throw new UserNotFoundException("id:"+id);
+
+        post.setUser(user.get());
+
+        Post savedPost = postRepository.save(post);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedPost.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
+
+    }
 }
